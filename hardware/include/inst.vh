@@ -5,7 +5,7 @@
    iob_pwm pwm0
      (
       .clk     (clk),
-
+      .rst     (rst),	
       // Registers interface
       
       // CPU interface
