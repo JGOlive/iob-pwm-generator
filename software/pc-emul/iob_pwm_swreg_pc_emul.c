@@ -7,16 +7,11 @@
 
 static uint32_t base;
 
-void GPIO_INIT_BASEADDR(uint32_t addr) {
+void PWM_INIT_BASEADDR(uint32_t addr) {
     base = addr;
     return;
 }
 
-//Get values from inputs
-uint32_t gpio_get(){
-    return 0xaaaaaaaa;
-}
+void IOB_PWM_SET_SPER(uint8_t period){
 
-//Set values on outputs
-void gpio_set(uint32_t outputs){
 }

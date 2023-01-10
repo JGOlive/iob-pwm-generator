@@ -7,9 +7,7 @@
       .clk     (clk),
 
       // Registers interface
-      .define_duty (define_duty),
-      .pwm_out (pwm_out),
-
+      
       // CPU interface
       .valid   (slaves_req[`valid(`PWM)]),
       .address (slaves_req[`address(`PWM,`iob_pwm_swreg_ADDR_W+2)-2]),

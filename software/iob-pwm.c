@@ -7,17 +7,7 @@ void pwm_init(int base_address){
   IOB_PWM_INIT_BASEADDR(base_address);
 }
 
-//Get values from inputs
-uint32_t gpio_get(){
-  return IOB_GPIO_GET_INPUT();
-}
-
 //Set values on outputs
-void gpio_set(uint32_t value){
-  IOB_GPIO_SET_OUTPUT(value);
-}
-
-//Set mask for outputs (bits 1 are driven outputs, bits 0 are tristate)
-void gpio_set_output_enable(uint32_t value){
-  IOB_GPIO_SET_OUTPUT_ENABLE(value);
+void pwm_set_period(uint8_t period){
+  IOB_PWM_SET_SPER(period);
 }
