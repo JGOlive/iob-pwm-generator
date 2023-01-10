@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "iob_gpio_swreg.h"
+#include "iob_pwm_swreg.h"
 
 static uint32_t base;
 

@@ -1,15 +1,15 @@
-include $(GPIO_DIR)/config.mk
+include $(PWM_DIR)/config.mk
 
-GPIO_SW_DIR:=$(GPIO_DIR)/software
+PWM_SW_DIR:=$(PWM_DIR)/software
 
 #include
-INCLUDE+=-I$(GPIO_SW_DIR)
+INCLUDE+=-I$(PWM_SW_DIR)
 
 #headers
-HDR+=$(GPIO_SW_DIR)/*.h iob_gpio_swreg.h
+HDR+=$(PWM_SW_DIR)/*.h iob_pwm_swreg.h
 
 #sources
-SRC+=$(GPIO_SW_DIR)/iob-gpio.c
+SRC+=$(PWM_SW_DIR)/iob-pwm.c
 
-iob_gpio_swreg.h: $(GPIO_DIR)/mkregs.conf
-	$(MKREGS) iob_gpio $(GPIO_DIR) SW
+iob_pwm_swreg.h: $(PWM_DIR)/mkregs.conf
+	$(MKREGS) iob_pwm $(PWM_DIR) SW

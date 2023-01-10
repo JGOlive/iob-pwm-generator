@@ -1,4 +1,4 @@
-GPIO_DIR:=../../..
+PWM_DIR:=../../..
 
 incdir:=-I
 defmacro:=-D

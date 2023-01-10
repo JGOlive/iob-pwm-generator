@@ -1,22 +1,20 @@
    //
-   // GPIO
+   // PWM
    //
 
-   iob_gpio gpio0
+   iob_pwm pwm0
      (
       .clk     (clk),
-      .rst     (rst),
 
       // Registers interface
-      .gpio_input (gpio_input),
-      .gpio_output (gpio_output),
-      .gpio_output_enable (gpio_output_enable),
+      .define_duty (define_duty),
+      .pwm_out (pwm_out),
 
       // CPU interface
-      .valid   (slaves_req[`valid(`GPIO)]),
-      .address (slaves_req[`address(`GPIO,`iob_gpio_swreg_ADDR_W+2)-2]),
-      .wdata   (slaves_req[`wdata(`GPIO)]),
-      .wstrb   (slaves_req[`wstrb(`GPIO)]),
-      .rdata   (slaves_resp[`rdata(`GPIO)]),
-      .ready   (slaves_resp[`ready(`GPIO)])
+      .valid   (slaves_req[`valid(`PWM)]),
+      .address (slaves_req[`address(`PWM,`iob_pwm_swreg_ADDR_W+2)-2]),
+      .wdata   (slaves_req[`wdata(`PWM)]),
+      .wstrb   (slaves_req[`wstrb(`PWM)]),
+      .rdata   (slaves_resp[`rdata(`PWM)]),
+      .ready   (slaves_resp[`ready(`PWM)])
       );

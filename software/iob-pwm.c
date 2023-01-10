@@ -1,10 +1,10 @@
-#include "iob-gpio.h"
+#include "iob-pwm.h"
 
 //GPIO functions
 
-//Set GPIO base address
-void gpio_init(int base_address){
-  IOB_GPIO_INIT_BASEADDR(base_address);
+//Set pwm base address
+void pwm_init(int base_address){
+  IOB_PWM_INIT_BASEADDR(base_address);
 }
 
 //Get values from inputs
