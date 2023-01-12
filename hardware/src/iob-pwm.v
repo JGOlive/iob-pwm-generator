@@ -14,7 +14,6 @@ module iob_pwm
 `include "iob_s_if.vh"
 
     // inputs and outputs have dedicated interface
-    output PWM_OUTPUT
 `include "iob_gen_if.vh"
     );
 
@@ -55,14 +54,14 @@ module iob_pwm
       );
       
       
-   localparam count_divider = 128;   
+   localparam count_divider = 128;  //SPER 
    reg rom_counter_en;
    
    `IOB_VAR(freq_counter, 7);
    `IOB_VAR(rom_addr, ROM_ADDR_W);
 
-   `IOB_MODCNT_R(clk, rst, 0, freq_counter, (2^ROM_ADDR_W - 1));
-   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_addr, (2^ROM_ADDR_W - 1));
+   `IOB_MODCNT_R(clk, rst, 0, freq_counter, count_divider);
+   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_addr, (2**ROM_ADDR_W - 1));
 
    assign rom_counter_en = (freq_counter == (count_divider - 1));
    assign rom_r_addr = rom_addr;
@@ -70,22 +69,21 @@ module iob_pwm
    //
    // READ BOOT ROM 
    //
-   reg rom_r_valid;
    reg [ROM_ADDR_W-3: 0] rom_r_addr;
    wire [ROM_DATA_W-1: 0] rom_r_rdata;
+   wire [ROM_DATA_W-1: 0] duty_cycle_converted_value;
 
    always @(posedge clk, posedge rst,)
-     if(rst) begin
-        rom_r_valid <= 1'b1;
+     if (sine && rom_r_addr != (2**(`ROM_ADDR_W-2)-1))begin
+       rom_r_addr <= rom_r_addr + 1'b1;
+       duty_cycle_converted_value <= ((rom_r_rdata * count_divider) >> 16);
+       end
+      else begin
         rom_r_addr <= {`ROM_ADDR_W-2{1'b0}};
-     end else if (boot && rom_addr != (2**(`ROM_ADDR_W-2)-1))
-       rom_r_raddr <= rom_r_addr + 1'b1;
-     else begin
-        rom_r_valid <= 1'b0;
-        rom_r_addr <= {`ROM_ADDR_W-2{1'b0}};
-     end
-    
-    assign PWM_OUTPUT = (freq_counter <= rom_r_rdata); 
+        duty_cycle_converted_value <= ((rom_r_rdata * count_divider) >> 16);
+      end
+      
+    assign PWM_OUTPUT = (freq_counter <= ); 
     
     
 endmodule
