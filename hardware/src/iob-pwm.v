@@ -6,12 +6,15 @@
 module iob_pwm 
   # (
      parameter DATA_W = 32, //PARAM CPU data width
-     parameter ADDR_W = `iob_pwm_swreg_ADDR_W //MACRO CPU address section width
+     parameter ADDR_W = `iob_pwm_swreg_ADDR_W, //MACRO CPU address section width
+     parameter ROM_ADDR_W = 7,
+     parameter ROM_DATA_W = 16
      )
    (
    
    //CPU interface
 `include "iob_s_if.vh"
+  output pwm_output,
 
     // inputs and outputs have dedicated interface
 `include "iob_gen_if.vh"
@@ -36,8 +39,12 @@ module iob_pwm
    //INSTANTIATE ROM
    //
    
-   localparam ROM_ADDR_W = 7;
-   localparam ROM_DATA_W = 16;
+  `IOB_VAR(freq_counter, 7)
+  `IOB_VAR(rom_r_addr, ROM_ADDR_W)
+  `IOB_WIRE(rom_r_rdata, ROM_DATA_W)
+  `IOB_WIRE(duty_cycle_converted_value, ROM_DATA_W)
+  `IOB_WIRE(rom_r_valid, 1)
+
    
    iob_rom_sp
      #(
@@ -54,36 +61,23 @@ module iob_pwm
       );
       
       
-   localparam count_divider = 128;  //SPER 
+   localparam count_divider = 128;  //SPER
    reg rom_counter_en;
    
-   `IOB_VAR(freq_counter, 7);
-   `IOB_VAR(rom_addr, ROM_ADDR_W);
-
-   `IOB_MODCNT_R(clk, rst, 0, freq_counter, count_divider);
-   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_addr, (2**ROM_ADDR_W - 1));
+   `IOB_MODCNT_R(clk, rst, 0, freq_counter, count_divider)
+   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_r_addr, (2**ROM_ADDR_W - 1))
 
    assign rom_counter_en = (freq_counter == (count_divider - 1));
-   assign rom_r_addr = rom_addr;
    
    //
    // READ BOOT ROM 
    //
-   reg [ROM_ADDR_W-3: 0] rom_r_addr;
-   wire [ROM_DATA_W-1: 0] rom_r_rdata;
-   wire [ROM_DATA_W-1: 0] duty_cycle_converted_value;
 
-   always @(posedge clk, posedge rst,)
-     if (sine && rom_r_addr != (2**(`ROM_ADDR_W-2)-1))begin
-       rom_r_addr <= rom_r_addr + 1'b1;
-       duty_cycle_converted_value <= ((rom_r_rdata * count_divider) >> 16);
-       end
-      else begin
-        rom_r_addr <= {`ROM_ADDR_W-2{1'b0}};
-        duty_cycle_converted_value <= ((rom_r_rdata * count_divider) >> 16);
-      end
-      
-    assign PWM_OUTPUT = (freq_counter <= ); 
+   assign rom_r_valid = 1'b1;
+
+   assign duty_cycle_converted_value = ((rom_r_rdata * count_divider) >> 16);
+
+   assign pwm_output = (freq_counter <= duty_cycle_converted_value);
     
     
 endmodule

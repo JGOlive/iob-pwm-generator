@@ -1,1 +1,2 @@
-   // PWM
+// PWM
+output pwm_output
