@@ -12,6 +12,6 @@ void PWM_INIT_BASEADDR(uint32_t addr) {
     return;
 }
 
-void IOB_PWM_SET_SPER(uint8_t period){
+void IOB_PWM_SET_SPER(uint16_t period){
 
 }

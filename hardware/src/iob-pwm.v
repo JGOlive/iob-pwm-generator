@@ -61,13 +61,13 @@ module iob_pwm
       );
       
       
-   localparam count_divider = 128;  //SPER
+   localparam count_divider = PWM_SPER;  //SPER
    reg rom_counter_en;
    
-   `IOB_MODCNT_R(clk, rst, 0, freq_counter, count_divider)
+   `IOB_MODCNT_R(clk, rst, 0, freq_counter, PWM_SPER)
    `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_r_addr, (2**ROM_ADDR_W - 1))
 
-   assign rom_counter_en = (freq_counter == (count_divider - 1));
+   assign rom_counter_en = (freq_counter == (PWM_SPER - 1));
    
    //
    // READ BOOT ROM 
@@ -75,7 +75,7 @@ module iob_pwm
 
    assign rom_r_valid = 1'b1;
 
-   assign duty_cycle_converted_value = ((rom_r_rdata * count_divider) >> 16);
+   assign duty_cycle_converted_value = ((rom_r_rdata * PWM_SPER) >> 16);
 
    assign pwm_output = (freq_counter <= duty_cycle_converted_value);
     
