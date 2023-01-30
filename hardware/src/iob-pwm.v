@@ -39,10 +39,10 @@ module iob_pwm
    //INSTANTIATE ROM
    //
    
-  `IOB_VAR(freq_counter, 7)
+  `IOB_VAR(freq_counter, 16)
   `IOB_VAR(rom_r_addr, ROM_ADDR_W)
   `IOB_WIRE(rom_r_rdata, ROM_DATA_W)
-  `IOB_WIRE(duty_cycle_converted_value, ROM_DATA_W)
+  `IOB_WIRE(duty_cycle_converted_value, DATA_W)
   `IOB_WIRE(rom_r_valid, 1)
 
    
@@ -59,12 +59,10 @@ module iob_pwm
       .addr(rom_r_addr),
       .r_data(rom_r_rdata)
       );
-      
-      
-   localparam count_divider = PWM_SPER;  //SPER
+   wire freq_counter_en = (PWM_SPER != 0);   
    reg rom_counter_en;
    
-   `IOB_MODCNT_R(clk, rst, 0, freq_counter, PWM_SPER)
+   `IOB_MODCNT_RE(clk, rst, 0, freq_counter_en, freq_counter, PWM_SPER)
    `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_r_addr, (2**ROM_ADDR_W - 1))
 
    assign rom_counter_en = (freq_counter == (PWM_SPER - 1));
