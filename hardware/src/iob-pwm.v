@@ -7,8 +7,9 @@ module iob_pwm
   # (
      parameter DATA_W = 32, //PARAM CPU data width
      parameter ADDR_W = `iob_pwm_swreg_ADDR_W, //MACRO CPU address section width
-     parameter ROM_ADDR_W = 7,
-     parameter ROM_DATA_W = 16
+     parameter ROM_ADDR_W = 11,
+     parameter ROM_DATA_W = 16,
+     parameter PWM_PERIOD = 256
      )
    (
    
@@ -41,6 +42,7 @@ module iob_pwm
    
   `IOB_VAR(freq_counter, 16)
   `IOB_VAR(rom_r_addr, ROM_ADDR_W)
+  `IOB_VAR(rom_r_addr_mux, ROM_ADDR_W)
   `IOB_WIRE(rom_r_rdata, ROM_DATA_W)
   `IOB_WIRE(duty_cycle_converted_value, DATA_W)
   `IOB_WIRE(rom_r_valid, 1)
@@ -59,23 +61,19 @@ module iob_pwm
       .addr(rom_r_addr),
       .r_data(rom_r_rdata)
       );
-   wire freq_counter_en = (PWM_SPER != 0);   
+   wire freq_counter_en = 1;   
    reg rom_counter_en;
    
-   `IOB_MODCNT_RE(clk, rst, 0, freq_counter_en, freq_counter, PWM_SPER)
-   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_r_addr, (2**ROM_ADDR_W - 1))
-
-   assign rom_counter_en = (freq_counter == (PWM_SPER - 1));
+   `IOB_MODCNT_RE(clk, rst, 0, freq_counter_en, freq_counter, PWM_PERIOD)
+   `IOB_MODCNT_RE(clk, rst, 0, rom_counter_en, rom_r_addr_mux, (2**ROM_ADDR_W - 1))
    
-   //
-   // READ BOOT ROM 
-   //
+   assign rom_counter_en = (freq_counter == (PWM_PERIOD - 1));
+   
+   assign rom_r_addr = ((PWM_SPER * rom_r_addr_mux) % (2**ROM_ADDR_W - 1));
 
    assign rom_r_valid = 1'b1;
 
-   assign duty_cycle_converted_value = ((rom_r_rdata * PWM_SPER) >> 16);
-
-   assign pwm_output = (freq_counter <= duty_cycle_converted_value);
+   assign pwm_output = (freq_counter >= rom_r_rdata);
     
     
 endmodule

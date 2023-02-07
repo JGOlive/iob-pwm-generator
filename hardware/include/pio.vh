@@ -1,2 +1,2 @@
-// PWM
-output pwm_output,
+   //PWM
+   output pwm_output,
